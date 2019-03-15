@@ -132,9 +132,9 @@ namespace vrpn_client_ros
     //   // {
     //   //   ROS_WARN("Must provide paramter tracker_name for node %s", nh.getNamespace());
     //   // }
-    //   // else 
+    //   // else
     //   // {
-    //   nh.param<double>("update_frequency", update_frequency, 200.0);        
+    //   nh.param<double>("update_frequency", update_frequency, 200.0);
     //   ROS_INFO("update_frequency %f",update_frequency);
     //   // }
 
@@ -142,9 +142,9 @@ namespace vrpn_client_ros
       this->wc = 20.0;
       this->Ts = 1.0/200;
       this->alpha = 1.0-exp(-this->wc*this->Ts);
-    
+
       double update_frequency;
-      update_frequency = 200.0; 
+      update_frequency = 200.0;
       mainloop_timer = nh.createTimer(ros::Duration(1 / update_frequency),
                                       boost::bind(&VrpnTrackerRos::mainloop, this));
     // }
@@ -163,7 +163,7 @@ namespace vrpn_client_ros
     tracker_remote_->mainloop();
   }
 
-  void VrpnTrackerRos::pose_publish(const vrpn_TRACKERCB tracker_pose) 
+  void VrpnTrackerRos::pose_publish(const vrpn_TRACKERCB tracker_pose)
   {
 
     if (this->use_server_time_)
@@ -182,10 +182,10 @@ namespace vrpn_client_ros
 
 
     // time update
-    if (this->FLAG_INITIAL_DT) 
+    if (this->FLAG_INITIAL_DT)
     {
       this->dt = this->pose_vel_msg_.header.stamp.toSec() - this->pose_vel_prev.header.stamp.toSec();
-      this->pose_vel_prev = this->pose_vel_msg_;      
+      this->pose_vel_prev = this->pose_vel_msg_;
 
       this->FLAG_INITIAL_DT = false;
     }
@@ -193,8 +193,8 @@ namespace vrpn_client_ros
     if ((this->pose_vel_msg_.header.stamp.toSec() - this->pose_vel_prev.header.stamp.toSec()) > 1.0/1000)
     {
       this->dt = this->pose_vel_msg_.header.stamp.toSec() - this->pose_vel_prev.header.stamp.toSec();
-      ROS_INFO("freq: %f, alpha: %f\n",1/(this->dt), this->alpha );
-      
+      // ROS_INFO("freq: %f, alpha: %f\n",1/(this->dt), this->alpha );
+
       this->pose_msg_.pose.position.x = tracker_pose.pos[0];
       this->pose_msg_.pose.position.y = tracker_pose.pos[1];
       this->pose_msg_.pose.position.z = tracker_pose.pos[2];
@@ -223,7 +223,7 @@ namespace vrpn_client_ros
         this->dx_dt = (this->pose_vel_msg_.position.x - this->pose_vel_prev.position.x)/this->dt;
         this->dy_dt = (this->pose_vel_msg_.position.y - this->pose_vel_prev.position.y)/this->dt;
         this->dz_dt = (this->pose_vel_msg_.position.z - this->pose_vel_prev.position.z)/this->dt;
-        
+
         // exponential smoothening
         this->pose_vel_msg_.velocity.x = this->alpha*this->dx_dt + (1-this->alpha)*this->pose_vel_prev.velocity.x;
         this->pose_vel_msg_.velocity.y = this->alpha*this->dy_dt + (1-this->alpha)*this->pose_vel_prev.velocity.y;
@@ -233,7 +233,7 @@ namespace vrpn_client_ros
       // storing current pose for next iteration
       this->pose_vel_prev = this->pose_vel_msg_;
 
-      // 
+      //
       this->FLAG_PUBLISH = true;
     }
     else
@@ -251,13 +251,13 @@ namespace vrpn_client_ros
     ros::Publisher *pose_vel_pub;
     std::size_t sensor_index(0);
     ros::NodeHandle nh = tracker->output_nh_;
-    
+
     if (tracker->process_sensor_id_)
     {
       sensor_index = static_cast<std::size_t>(tracker_pose.sensor);
       nh = ros::NodeHandle(tracker->output_nh_, std::to_string(tracker_pose.sensor));
     }
-    
+
     if (tracker->pose_pubs_.size() <= sensor_index)
     {
       tracker->pose_pubs_.resize(sensor_index + 1);
@@ -328,13 +328,13 @@ namespace vrpn_client_ros
     ros::Publisher *twist_pub;
     std::size_t sensor_index(0);
     ros::NodeHandle nh = tracker->output_nh_;
-    
+
     if (tracker->process_sensor_id_)
     {
       sensor_index = static_cast<std::size_t>(tracker_twist.sensor);
       nh = ros::NodeHandle(tracker->output_nh_, std::to_string(tracker_twist.sensor));
     }
-    
+
     if (tracker->twist_pubs_.size() <= sensor_index)
     {
       tracker->twist_pubs_.resize(sensor_index + 1);
@@ -389,7 +389,7 @@ namespace vrpn_client_ros
       sensor_index = static_cast<std::size_t>(tracker_accel.sensor);
       nh = ros::NodeHandle(tracker->output_nh_, std::to_string(tracker_accel.sensor));
     }
-    
+
     if (tracker->accel_pubs_.size() <= sensor_index)
     {
       tracker->accel_pubs_.resize(sensor_index + 1);
