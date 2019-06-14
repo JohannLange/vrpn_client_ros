@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(vrpn_client_ros)
 
-find_package(catkin REQUIRED COMPONENTS geometry_msgs roscpp tf2_ros)
+find_package(catkin REQUIRED COMPONENTS genmsg roscpp geometry_msgs std_msgs roscpp tf2_ros message_generation)
 find_package(VRPN REQUIRED)
 
 add_message_files(
@@ -10,13 +10,13 @@ add_message_files(
 )
 
 generate_messages(
-   DEPENDENCIES geometry_msgs   std_msgs
+   DEPENDENCIES geometry_msgs std_msgs
 )
 
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES vrpn_client_ros
-  CATKIN_DEPENDS geometry_msgs tf2_ros
+  CATKIN_DEPENDS geometry_msgs std_msgs tf2_ros message_runtime
   DEPENDS VRPN
 )
 
@@ -43,6 +43,15 @@ target_link_libraries(vrpn_tracker_node
   vrpn_client_ros
   ${catkin_LIBRARIES}
 )
+
+add_executable(vrpn_custom_node
+  src/vrpn_custom_tracker.cpp)
+add_dependencies(vrpn_custom_node vrpn_client_ros)
+target_link_libraries(vrpn_custom_node
+  vrpn_client_ros
+  ${catkin_LIBRARIES}
+)
+
 
 add_executable(vrpn_client_node
   src/vrpn_client_node.cpp)
